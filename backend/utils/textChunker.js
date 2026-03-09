@@ -6,21 +6,22 @@
  * @returns {Array<{content: string, chunkIndex:number, pageNumber:number}>}
  */
 
-export const chunkText = (text, chunkSize = 500,overlap=50) => {
+// This is the core of your RAG logic (Retrieval-Augmented Generation). It takes the full text of a document, splits it into manageable chunks, and then finds the most relevant chunks based on a user's query. This allows you to provide context to your AI model (like Gemini) without overwhelming it with too much information at once. The chunking function also includes an overlap to ensure that important information isn't lost between chunks, which can be crucial for maintaining context in AI responses.
+export const chunkText = (text, chunkSize = 500,overlap=50) => { // overlap is used to repeat some words from the previous chunk in the next one to maintain context
     if(!text || text.trim().length===0)
         return [];
 
     //clean text while preserving para structure
     const cleanedText = text
-    .replace(/\r\n/g,'\n')
-    .replace(/\s+/g,' ')
-    .replace(/\n /g,'\n')
-    .replace(/ \n/g,'\n')
-    .trim();
+    .replace(/\r\n/g,'\n') //windows line breaks to unix
+    .replace(/\s+/g,' ')// replace multiple spaces with single space
+    .replace(/\n /g,'\n') //Removes extra spaces before or after new lines.
+    .replace(/ \n/g,'\n') //Removes extra spaces before or after new lines.
+    .trim(); //Removes spaces from beginning and end.
 
 
     // try to split by paragraphs (sing or double newlines)
-    const paragraphs =cleanedText.split(/\n+/).filter(p=>p.trim().length>0);
+    const paragraphs =cleanedText.split(/\n+/).filter(p=>p.trim().length>0); //n+ means one or more newlines and filter removes empty paras and filter is used to iterate through the array of paragraphs and only keep those that have some non-whitespace characters after trimming.
 
     const chunks=[];
     let currentChunk = [];
@@ -36,7 +37,7 @@ export const chunkText = (text, chunkSize = 500,overlap=50) => {
         {
             if(currentChunk.length>0){
                 chunks.push({
-                    content:currentChunk.join('\n\n'),
+                    content:currentChunk.join('\n\n'), //currchunk is array of para, join them with double newline to maintain structure
                     chunkIndex:chunkIndex++,
                     pageNumber:0
                 });
@@ -45,13 +46,13 @@ export const chunkText = (text, chunkSize = 500,overlap=50) => {
             }
             //split large para into word-based chunks
             for(let i =0;i<paragraphWords.length;i+=(chunkSize-overlap)){
-                const chunkWords = paragraphWords.slice(i,i+chunkSize);
-                chunks.push({
-                    content:chunkWords.join(' '),
+                const chunkWords = paragraphWords.slice(i,i+chunkSize); // generally end is not included so to include it we are using i+chunkSize instead of i+chunkSize-1
+                chunks.push({   
+                    content:chunkWords.join(' '), // it combines all words into a single string
                     chunkIndex:chunkIndex++,
-                    pageNumber:0
+                    pageNumber:0 // placeholder, can be set if page info is available
                 });
-                if(i+chunkSize>=paragraphWords.length) break;
+                if(i+chunkSize>=paragraphWords.length) break; // it is a defensive check to break the loop if we have reached the end of the paragraph words to avoid unnecessary iterations.
             }
             continue;
         }

@@ -47,9 +47,8 @@ app.use(express.urlencoded({extended: true})); //parses: form data, allows neste
 
 
 
-//static folder for uploads
+//static folder for uploads that serves file to the public that are avail in upload folder
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));//serves file to the public that are avail in upload folder
-
 
 //Routes
 app.use('/api/auth',authRoutes);
@@ -59,9 +58,10 @@ app.use('/api/ai',aiRoutes);
 app.use('/api/quizzes', quizRoutes);
 app.use('/api/progress', progressRoutes);
 
-
-app.use(errorHandler);
-
+//Express uses a middleware pipeline architecture. so next() is used to pass control to the next middleware function in the stack. if we dont use next() the request will be left hanging and will not reach the route handler or error handler. so its important to call next() in our middlewares to ensure that the request is processed correctly and reaches the intended destination.
+//if(next(err)) is used in a middleware, it will skip all the remaining middlewares and route handlers and directly jump to the error handling middleware. this is useful when we encounter an error in our middleware and want to pass it to the error handler for proper handling and response to the client. so using next(err) allows us to handle errors gracefully and maintain a clean separation of concerns in our application.
+app.use(errorHandler); // should be after all routes because of the middleware stack
+//it runs when next(err) is called in any of the middlewares or route handlers or when an unhandled error occurs in the application. it catches the error and sends a proper response to the client based on the type of error and the environment (development or production).
 
 
 //error handler - runs when no routes are matched more like a 'catch-ALL'

@@ -1,17 +1,16 @@
 @import 'tailwindcss';
-@import url('https://fonts.googleapis.com/css2?family=Cascadia+Mono:ital,wght@0,200..700;1,200..700&display=swap');
 
-@theme base {
-  --font-display:"italic", sans-serif;
-  --breakpoint-3xl:1920px;
+@theme {
+  --font-display: "Cascadia Mono", monospace;
+  --breakpoint-3xl: 1920px;
   --color-primary: #FF9324;
-
 }
 
 @layer base {
+  @import url('https://fonts.googleapis.com/css2?family=Cascadia+Mono:ital,wght@0,200..700;1,200..700&display=swap');
+  
   html {
     font-family: var(--font-display);
-
   }
 
   body {

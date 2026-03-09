@@ -39,8 +39,8 @@ export const generateFlashcards = async (req,res,next) => {
         //Generate flashcards using Gemini
         const cards = await geminiService.generateFlashcards(
             document.extractedText,
-            parseInt(count)
-        );
+            parseInt(count) // ensures it's a number, default is 10 if not provided
+        ); 
 
         //save to database
         const flashcardSet = await Flashcard.create({
@@ -169,8 +169,6 @@ export const generateSummary = async (req,res,next) => {
             message:'Summary generated successfully',
             statusCode:200
         });
-
-
 
     }
     catch(error){

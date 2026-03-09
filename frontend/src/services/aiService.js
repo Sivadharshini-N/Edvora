@@ -1,9 +1,15 @@
-import axiosInstance from '../utils/axiosinstance';
+// The services folder is used to:
+// Handle API communication
+// Store business logic
+// Manage authentication
+// Keep components clean
+// Improve scalability
+import axiosInstance from '../utils/axiosinstance'; //A reusable, pre-configured Axios object that keeps your API calls clean, centralized, and scalable.
 import { API_PATHS } from '../utils/apiPaths';
 
 const generateFlashcards = async (documentId,options) => {
     try {
-        const response = await axiosInstance.post(API_PATHS.AI.GENERATE_FLASHCARDS, { documentId, ...options });
+        const response = await axiosInstance.post(API_PATHS.AI.GENERATE_FLASHCARDS, { documentId, ...options }); // ...options -> spreads the options object into individual key-value pairs in the request body, allowing for flexible and dynamic API calls based on user preferences.
         return response.data;
     } 
     catch (error){

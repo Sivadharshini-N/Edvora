@@ -28,18 +28,18 @@ const userSchema = new mongoose.Schema({
     }
 
 },// collection's field
- {timestamps: true}); //options for mongoose. that's why it is seperate obj
+ {timestamps: true}); //options for mongoose. that's why it is seperate obj 
 
 
 //middleware
-//hashing the password before saving 
+//hashing the password before saving  // here it is async so no need to use next() because it is not a callback function.  if it was a callback function, we would have to call next() to move to the next middleware or to save the document. but since it is async, we can simply return a promise and mongoose will handle it for us.
 userSchema.pre('save', async function(next){ //this is called when save is triggered whenever save is triggered - do this before saving 
     // if(!this.isModified('password')){ // isModified is a built - in function in mongoose where this represent curr user.  this is important step otherwise the pw might be rehashed again
     //     next();
     // }
 
-    const salt=await bcrypt.genSalt(10); // random string added before hashing
-    this.password = await bcrypt.hash(this.password,salt);
+    const salt=await bcrypt.genSalt(10); // random string added before hashing - gensalt is async() and it returns a promise so we need to await it.  2^10 = 1024 rounds of hashing or iterations. the higher the rounds, the more secure but also more time consuming. 10 is a good balance between security and performance.
+    this.password = await bcrypt.hash(this.password,salt); 
 } );
 
 
@@ -51,3 +51,6 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
 const User = mongoose.model('User', userSchema); //converting schema into model. here 'User' means create a model User using userSchema. mongoose will automatically convert User into "users" collection
 
 export default User;
+
+
+//here the method macthpassword and pre('save =') is middleware because it is a function that runs before or after certain events. in this case, pre('save') runs before saving a document and matchPassword is a method that can be called on a user document to compare the entered password with the hashed password in the database.

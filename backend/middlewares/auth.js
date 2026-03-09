@@ -24,6 +24,7 @@ const protect = async (req,res,next) => {
             }
 
             next(); //to avoid unhandled error - in middlewares express doesn't  move to next function explicitly. so we have to ask it move to the next function
+            //if the user exist we just add user details to the req so only we're explicitly calling next() here, otherwise if the user doesn't exist we are sending response with error message and status code
         }
         catch(error){
             console.error('Auth Middleware error:',error.message);

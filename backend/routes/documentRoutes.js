@@ -12,7 +12,7 @@ import upload from '../config/multer.js'; // Browsers send files as multipart/fo
 const router = express.Router(); // defining router obj. mini express app - router
 
 router.use(protect); //apply protect middleware to all routes - every time a endpoint is hitted the protect will run before processing
-
+//multer implicitly calls next() thats why we're not calling next() in upload()
 router.post('/upload',upload.single('file'),uploadDocument); // /document is already mounted in server.js  , single-> accepts one file and the the file field name should be 'file' in req  
 router.get('/',getDocuments);
 router.get('/:id',getDocument);

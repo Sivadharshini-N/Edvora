@@ -3,6 +3,7 @@ import {BrowserRouter as Router, Routes, Route, Navigate} from 'react-router-dom
 import ProtectedRoute from './components/auths/ProtectedRoute';
 import DashboardPage from './pages/Dashboard/DashboardPage';
 import LoginPage from './pages/Auth/LoginPage';
+import DocumentListPage from './pages/Documents/DocumentListPage';
 import DocumentDetailPage from './pages/Documents/DocumentDetailPage';
 import FlashcardPage from './pages/Flashcards/FlashcardPage';
 import NotFoundPage from './pages/NotFoundPage';
@@ -11,13 +12,12 @@ import QuizResultPage from './pages/Quizzes/QuizResultPage';
 import QuizTakePage from './pages/Quizzes/QuizTakePage';
 import FlashcardListPage from './pages/Flashcards/FlashcardListPage';
 import RegisterPage from './pages/Auth/RegisterPage';
-
+import { useAuth } from './context/AuthContext';
 
 const App = () => {
 
-  const isAutheticated =false;
-  const loading=false;
-
+    const {isAuthenticated, loading} = useAuth();
+  
   if(loading){
     return(
       <div className="flex items-center justify-content-center text-center">
@@ -29,7 +29,7 @@ const App = () => {
 
     <Router>
       <Routes>
-        <Route path='/' element={isAutheticated?<Navigate to='/dashboard'/>:<Navigate to='/login' replace/>}/>
+        <Route path='/' element={isAuthenticated?<Navigate to='/dashboard'replace/>:<Navigate to='/login' replace/>}/>
         
         <Route path='/login' element={<LoginPage/>}/>
         <Route path='/register' element={<RegisterPage/>}/>
