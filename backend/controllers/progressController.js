@@ -37,7 +37,7 @@ export const getDashboard = async (req,res,next) =>{
         const recentDocuments = await Document.find({userId})
         .sort({lastAccessed:-1})
         .limit(5)
-        .select('title score totalQuestions completedAt');
+        .select('title lastAccessed score totalQuestions completedAt');
 
         const recentQuizzes = await Quiz.find({userId})
         .sort({completedAt:-1})
@@ -46,8 +46,56 @@ export const getDashboard = async (req,res,next) =>{
         .select('title scores totalQuestions completedAt');
 
         
-        //study streak (simplified - in production, track daily activity)
-        const studyStreak = Math.floor(Math.random()*7)+1;
+        //study streak calculation based on recent activity
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        
+        // Get activity from the last 30 days
+        const thirtyDaysAgo = new Date(today);
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        
+        const recentDocumentActivity = await Document.find({
+            userId,
+            lastAccessed: { $gte: thirtyDaysAgo }
+        }).select('lastAccessed');
+        
+        const recentQuizActivity = await Quiz.find({
+            userId,
+            completedAt: { $gte: thirtyDaysAgo }
+        }).select('completedAt');
+        
+        // Combine and sort all activity dates
+        const activityDates = [
+            ...recentDocumentActivity.map(doc => doc.lastAccessed),
+            ...recentQuizActivity.map(quiz => quiz.completedAt)
+        ].filter(date => date).sort((a, b) => b - a);
+        
+        // Calculate streak
+        let studyStreak = 0;
+        const uniqueDays = new Set();
+        
+        activityDates.forEach(date => {
+            const dayKey = new Date(date.getFullYear(), date.getMonth(), date.getDate()).toDateString();
+            uniqueDays.add(dayKey);
+        });
+        
+        // Check consecutive days from today backwards
+        for (let i = 0; i < 30; i++) {
+            const checkDate = new Date(today);
+            checkDate.setDate(checkDate.getDate() - i);
+            const dayKey = checkDate.toDateString();
+            
+            if (uniqueDays.has(dayKey)) {
+                studyStreak++;
+            } else if (i === 0) {
+                // If no activity today, streak is 0
+                studyStreak = 0;
+                break;
+            } else {
+                // Gap in activity, streak ends
+                break;
+            }
+        }
 
         res.status(200).json({
             success:true,

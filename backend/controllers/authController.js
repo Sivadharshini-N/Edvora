@@ -17,14 +17,21 @@ export const register = async (req,res,next) =>{//here next is to intimate expre
     try{
         const {username, email, password} = req.body;
 
-        const userExists = await User.findOne({ $or:[{email}]});
-
+        const userExists = await User.findOne({ email });
         if(userExists){
             return res.status(400).json({
                 success:false,
                 error: userExists.email === email ? 'Email already registered':'Username already taken',
                 statusCode:400
             });
+        }
+        const usernameExists = await User.findOne({username});
+        if(usernameExists){
+            return res.status(400).json({
+                success:false,
+                error: usernameExists.username === username ? 'Username already taken':'Email already registered',
+                statusCode:400
+            })
         }
 
         const user = await User.create({
@@ -41,7 +48,7 @@ export const register = async (req,res,next) =>{//here next is to intimate expre
             success:true,
             data: {
                 user:{
-                    id: user.__id,
+                    id: user._id,
                     username:user.username,
                     email: user.email,
                     profileImage: user.profileImage,
