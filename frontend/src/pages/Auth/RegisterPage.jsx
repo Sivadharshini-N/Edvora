@@ -38,9 +38,9 @@ const RegisterPage = () => {
     }
   };
 
-  return (
-    <div className='flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50'>
-      <div className='absolute inset-0 bg-[radial-gradient(#e5e7eb_1-px, tansparent_1px)] bg-size-[16px_16px] opacity-30' />
+  return ( 
+    <div className='flex relative items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50'>
+      <div className='absolute inset-0 bg-[radial-gradient(#e5e7eb_1-px,transparent_1px)] bg-[size:16px_16px] opacity-30'/>
       <div className='relative w-full max-w-md px-6'>
         <div className=' bg-white/80 backdrop-blue-xl border border-slate-200/60 rounded-3xl shadow-xl shadow-slate-200/50 p-10'>
           {/*header*/}
@@ -52,7 +52,7 @@ const RegisterPage = () => {
             <p className='text-slate-500 text-sm'>Start your AI powered learning experience</p>
           </div>
           {/* form */}
-          <div className=" space-y-5">
+          <div className="space-y-5">
             {/* username-field */}
             <div className=" space-y-2">
               <label htmlFor="" className='block text-xs font-semibold text-slate-700 uppercase tracking-wide'>
